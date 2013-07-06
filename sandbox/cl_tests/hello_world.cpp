@@ -1,6 +1,6 @@
 #include <utility>
 //#define __NO_STD_VECTOR // Use cl:vector instaed of STL version
-#include "OpenCL/cl.hpp"
+#include "CL/cl.hpp"
 
 #include <cstdio>
 #include <cstdlib>

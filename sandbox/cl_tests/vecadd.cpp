@@ -25,6 +25,9 @@ int main(int argc, char** argv)
     C[i] = 0;
   }
 
+  cl::Program program;
+  std::vector<cl::Device> devices;
+
   try {
     std::vector<cl::Platform> platformList;
     cl::Platform::get(&platformList);
@@ -32,15 +35,15 @@ int main(int argc, char** argv)
         (cl_context_properties) (platformList[0])(),
         0};
     cl::Context context(CL_DEVICE_TYPE_CPU, cprops);
-    std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
+    devices = context.getInfo<CL_CONTEXT_DEVICES>();
     cl::CommandQueue queue(context, devices[0], 0);
     std::ifstream file(kernel_filename.c_str());
     std::string prog(std::istreambuf_iterator<char>(file),
                      (std::istreambuf_iterator<char>()));
     cl::Program::Sources sources(1, std::make_pair(prog.c_str(), 0));
-    cl::Program program(context, sources);
+    program = cl::Program(context, sources);
 
-    program.build(devices);
+    program.build(devices, "");
 
     cl::Buffer aBuffer = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
         BUFFER_SIZE*sizeof(int), (void *) &A[0]);
@@ -66,6 +69,12 @@ int main(int argc, char** argv)
     queue.enqueueUnmapMemObject(cBuffer, (void *) output);
   } catch (cl::Error err) {
       std::cerr << "ERROR: " << err.what() << "(" << err.err() << ")" << std::endl;
+      if (err.err() == CL_BUILD_PROGRAM_FAILURE) {
+        std::string buildLog;
+        program.getBuildInfo(devices[0], CL_PROGRAM_BUILD_LOG, &buildLog);
+        std::cerr << "Error in kernel: " << std::endl
+                  << buildLog << std::endl;
+      }
       return EXIT_FAILURE;
   };
   return EXIT_SUCCESS;
