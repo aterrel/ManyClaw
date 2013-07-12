@@ -5,17 +5,17 @@ MAJOR_VERSION ?= 0
 MINOR_VERSION ?= 1.0
 
 
-CXX = g++
+CXX = icpc
 LINK ?= $(CXX)
 ifeq ($(CXX), g++)
 	OMPCFLAGS = -fopenmp
-else ifeq ($(CXX), icc)
+else ifeq ($(CXX), icpc)
 	OMPCFLAGS = -openmp
 endif
 
 
 ifdef OPT
-	OPTFLAGS = -03
+	OPTFLAGS = -O3 -vec-report=3
 else 
 	OPTFLAGS = -O0 -g
 endif
@@ -23,13 +23,19 @@ WARNFLAGS =  -Wall -Wno-unused-parameter
 CXXFLAGS = -I./ $(OPTFLAGS) $(WARNFLAGS) $(OMPCFLAGS)
 LDFLAGS = 
 
+ifeq ($(CXX), icpc)
+	CXXFLAGS += -restrict -ansi-alias
+endif
 
 ifdef TBB_LIB
 	CXXFLAGS += -I$(TBB_INC)
 	TBB_LDFLAGS = -L$(TBB_LIB)  
 endif
+ifeq ($(CXX), icpc)
+	CXXFLAGS += -tbb
+endif
 TBB_LDFLAGS += -ltbb
-LDFLAGS += $(TBB_LD_FLAGS)
+LDFLAGS += $(TBB_LDFLAGS)
 
 
 # Dynamic library flags (archetecture dependent), note the platforms here are
@@ -43,7 +49,7 @@ ifeq ($(UNAME), Linux)
     VERSION_FLAGS =
 
     # Compiler specific flags
-    ifeq ($(CXX), g++)
+    ifeq ($(CXX), $(filter $(CXX), g++ icpc))
         CXXFLAGS += -fPIC
         LDFLAGS += -shared
     endif

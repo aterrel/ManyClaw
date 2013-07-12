@@ -9,34 +9,34 @@
 
 
 // Evaluates advection_rp via serial execution
-void advection_rp_grid_eval_serial(const real* q,
-				   const real* aux,
+void advection_rp_grid_eval_serial(const real* restrict q,
+				   const real* restrict aux,
 				   const int nx,
 				   const int ny,
-				   real* amdq,
-				   real* apdq,
-				   real* wave,
-				   real* wave_speed);
+				   real* restrict amdq,
+				   real* restrict apdq,
+				   real* restrict wave,
+				   real* restrict wave_speed);
 
 // Evaluates advection_rp via parallel execution via openmp
-void advection_rp_grid_eval_omp(const real* q,
-				const real* aux,
+void advection_rp_grid_eval_omp(const real* restrict q,
+				const real* restrict aux,
 				const int nx,
 				const int ny,
-				real* amdq,
-				real* apdq,
-				real* wave,
-				real* wave_speed);
+				real* restrict amdq,
+				real* restrict apdq,
+				real* restrict wave,
+				real* restrict wave_speed);
 
 // Evaluates advection_rp via parallel execution via TBB
-void advection_rp_grid_eval_tbb(const real* q,
-				const real* aux,
+void advection_rp_grid_eval_tbb(const real* restrict q,
+				const real* restrict aux,
 				const int nx,
 				const int ny,
-				real* amdq,
-				real* apdq,
-				real* wave,
-				real* wave_speed);
+				real* restrict amdq,
+				real* restrict apdq,
+				real* restrict wave,
+				real* restrict wave_speed);
 
 
 extern const char * advection_rp_grid_eval_names[];
