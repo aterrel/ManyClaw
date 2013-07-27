@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include <numeric>
 #include <algorithm>
 #include "data_structures.h"
 
@@ -16,6 +17,14 @@ struct abs_diff
   }
 };
 
+struct max_s
+{
+  real operator()(real a, real b) const
+  {
+    return std::max(a, b);
+  }
+};
+
 // maximum absolute difference between components
 template <typename Vector>
 real max_error(const Vector& v1, const Vector& v2)
@@ -24,7 +33,7 @@ real max_error(const Vector& v1, const Vector& v2)
     (v1.begin(), v1.end(),
      v2.begin(),
      real(0),
-     std::max<real>,
+     max_s(),
      abs_diff());
 }
 
